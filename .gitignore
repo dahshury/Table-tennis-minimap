@@ -1,0 +1,12 @@
+/pingpong.egg-info/
+/chkpts/*
+/datasets
+/dist
+/media/*.mp4
+/media/*.avi
+/media/experiment
+/media/extracted
+/pingpong.egg-info
+/sam2
+/src/sam2
+/notebooks/sam2
