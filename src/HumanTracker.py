@@ -240,3 +240,18 @@ class HumanTracker:
             new_table_track[frame_idx] = new_poly
 
         return new_table_track
+    
+if __name__ == "__main__":
+    
+    from TableTracker import TableTracker
+    
+    video_path="../media/test2.mp4"
+    
+    # Process table tracking
+    detector = TableTracker(video_path=video_path)
+    table_track = detector.process_video(output_video=False)
+    
+    # Process human tracking
+    model = YOLO("../chkpts/yolo11n.pt")
+    human_tracker = HumanTracker(model, video_path, table_track, save_video=True)
+    human_tracks = human_tracker.track_players()

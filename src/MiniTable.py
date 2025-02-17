@@ -29,7 +29,7 @@ class MiniTable:
         process_video():
             Processes the input video and generates the mini table video with ball and human detections.
     """
-    def __init__(self, video_path, table_track, ball_detections, human_tracks, resize_from=1280):
+    def __init__(self, video_path, table_track, ball_detections, human_tracks, resize_from=None):
         self.video_path = video_path
         self.table_track = table_track
         self.ball_detections = ball_detections  # Each value is (x, y, vis)
@@ -38,8 +38,8 @@ class MiniTable:
         self.resize_from = resize_from
         
         # Buffers for temporal averaging over 10 frames for human detections.
-        self.human0_buffer = deque(maxlen=10)
-        self.human1_buffer = deque(maxlen=10)
+        self.human0_buffer = deque(maxlen=5)
+        self.human1_buffer = deque(maxlen=5)
 
     def find_homography_matrix(self, src_pts):
         dst_points = np.array([
@@ -73,16 +73,19 @@ class MiniTable:
         height_orig = int(cap.get(cv2.CAP_PROP_FRAME_HEIGHT))
 
         # Compute dimensions for extracted frames (max dimension = self.resize_from)
-        if width_orig >= height_orig:
-            extracted_width = self.resize_from
-            extracted_height = int(round(height_orig * (self.resize_from / width_orig)))
-        else:
-            extracted_height = self.resize_from
-            extracted_width = int(round(width_orig * (self.resize_from / height_orig)))
+        if self.resize_from:
+            if width_orig >= height_orig:
+                extracted_width = self.resize_from
+                extracted_height = int(round(height_orig * (self.resize_from / width_orig)))
+            else:
+                extracted_height = self.resize_from
+                extracted_width = int(round(width_orig * (self.resize_from / height_orig)))
         
-        # Scaling factors to convert from extracted frame coordinates to original dimensions.
-        scale_x = width_orig / extracted_width
-        scale_y = height_orig / extracted_height
+            # Scaling factors to convert from extracted frame coordinates to original dimensions.
+            scale_x = width_orig / extracted_width
+            scale_y = height_orig / extracted_height
+        else:
+            scale_x, scale_y = 1,1
 
         # Load the mini table image.
         mini_table_img = cv2.imread(self.mini_table_image)
@@ -134,7 +137,7 @@ class MiniTable:
                 ball_center_arr = np.array([[ball_center_xy]], dtype=np.float32)
                 ball_center_transformed = cv2.perspectiveTransform(ball_center_arr, M)[0][0]
                 cv2.circle(frame_mini, (int(ball_center_transformed[0]), int(ball_center_transformed[1])), 
-                           10, (0, 165, 255), -1)
+                           10, (85, 44, 255), -1)
 
             # Update human detection buffers with the current frame's detections.
             if frame_idx in self.human_tracks:
@@ -158,14 +161,14 @@ class MiniTable:
                     avg_human0_center_arr = np.array([[avg_human0_center]], dtype=np.float32)
                     human0_center_transformed = cv2.perspectiveTransform(avg_human0_center_arr, M)[0][0]
                     cv2.circle(frame_mini, (int(human0_center_transformed[0]), int(human0_center_transformed[1])), 
-                               20, (139, 0, 0), -1)
+                               20, (14, 10, 84), -1)
                 # Process human1 averaged detection.
                 if len(self.human1_buffer) > 0:
                     avg_human1_center = np.mean(np.array(self.human1_buffer), axis=0)
                     avg_human1_center_arr = np.array([[avg_human1_center]], dtype=np.float32)
                     human1_center_transformed = cv2.perspectiveTransform(avg_human1_center_arr, M)[0][0]
                     cv2.circle(frame_mini, (int(human1_center_transformed[0]), int(human1_center_transformed[1])), 
-                               20, (128, 0, 128), -1)
+                               20, (54, 146, 243), -1)
 
             # Write the updated mini table image to the output video.
             out.write(frame_mini)
@@ -177,28 +180,28 @@ class MiniTable:
         
 if __name__ == "__main__":
     video_path = "../media/test2.mp4"
-    resize_size = 360
+    resize_size = None
     
-    # # Extract frames and process ball tracking
-    # save_dir, _ = extract_frames(video_path, resize_size=resize_size)
-    # bt = BallTracker(video_path=video_path, save_dir=save_dir)
-    # frame_idx, bbox = bt.find_ball_frame()
-    # ball_track = bt.track_ball(frame_idx, bbox)
-    # # print(ball_track)
+    # Extract frames and process ball tracking
+    save_dir, _ = extract_frames(video_path, resize_size=resize_size)
+    bt = BallTracker(video_path=video_path, save_dir=save_dir)
+    frame_idx, bbox = bt.find_ball_frame()
+    ball_track = bt.track_ball(frame_idx, bbox)
+    # print(ball_track)
     
     # Process table tracking
     detector = TableTracker(video_path=video_path)
-    table_track = detector.process_video(output_video=True)
+    table_track = detector.process_video(output_video=False)
     # print(table_track)
 
-    # # Process human tracking
-    # model = YOLO("../chkpts/yolo11n.pt")
-    # human_tracker = HumanTracker(model, video_path, table_track, save_video=False)
-    # human_tracks = human_tracker.track_players()
-    # human_tracker.find_most_parallel_line()
-    # sorted_table_track = human_tracker.sort_points()
-    # # print(human_tracks)
+    # Process human tracking
+    model = YOLO("../chkpts/yolo11n.pt")
+    human_tracker = HumanTracker(model, video_path, table_track, save_video=False)
+    human_tracks = human_tracker.track_players()
+    human_tracker.find_most_parallel_line()
+    sorted_table_track = human_tracker.sort_points()
+    # print(human_tracks)
 
-    # # Generate mini table video
-    # minitable = MiniTable(video_path, sorted_table_track, ball_track, human_tracks, resize_from=resize_size)
-    # minitable.process_video()
+    # Generate mini table video
+    minitable = MiniTable(video_path, sorted_table_track, ball_track, human_tracks, resize_from=resize_size)
+    minitable.process_video()

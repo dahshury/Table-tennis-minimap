@@ -79,7 +79,6 @@ class BallTracker:
                                     max(0.0, min(box[3] * scaled_height / image.size[1], scaled_height - 1)),
                                 ]
                                 final_box = np.array([np.float32(int(p)) for p in box], dtype=np.float32)
-                                print(f"Final box: {final_box}")
                                 return frame_idx, final_box
                 frame_idx += 1
             return None, None
@@ -177,7 +176,10 @@ class BallTracker:
             torch.clear_autocast_cache()
             torch.cuda.empty_cache()
 if __name__ == "__main__":
-    save_dir, _ = extract_frames("../media/clip2.mp4", resize_size=240)
-    bt = BallTracker(video_path="../media/clip2.mp4", save_dir=save_dir, visualize=True)
+    
+    video_path="../media/test2.mp4"
+    # Extract frames and process ball tracking
+    save_dir, _ = extract_frames(video_path, resize_size=None)
+    bt = BallTracker(video_path=video_path, save_dir=save_dir, visualize=True)
     frame_idx, bbox = bt.find_ball_frame()
-    ball_detections = bt.track_ball(frame_idx, bbox)
+    ball_track = bt.track_ball(frame_idx, bbox)

@@ -1,13 +1,14 @@
+import gc
+import os
+
 import cv2
 import numpy as np
-import os
 import torch
 from matplotlib import pyplot as plt
 from sam2.build_sam import build_sam2
 from sam2.sam2_image_predictor import SAM2ImagePredictor
 from ultralytics import YOLO
-from utils import appx_best_fit_ngon, extract_frames, segment_dominant_color
-import gc
+from utils import appx_best_fit_ngon, extract_frames, numeric_sort, segment_dominant_color
 
 class TableTracker:
     """ A class to track a table in a video using YOLO for object detection and SAM for segmentation.
@@ -34,7 +35,7 @@ class TableTracker:
             visualize_results(self, image, mask_crop_image, denoised_image, segmented, closed, hull_image):
                 Visualizes the intermediate results of the table detection and segmentation process."""
     
-    def __init__(self, video_path, yolo_model_path="../runs/pose/train5/weights/best.pt",
+    def __init__(self, video_path, yolo_model_path="../runs/pose/train5/weights/last.pt",
                  sam_model_path="../sam2/checkpoints/sam2.1_hiera_large.pt",
                  sam_config_path="configs/sam2.1/sam2.1_hiera_l.yaml",
                  visualize=False):
@@ -43,8 +44,10 @@ class TableTracker:
         self.sam_model_predictor = SAM2ImagePredictor(build_sam2(sam_config_path, sam_model_path))
         self.visualize= visualize
         save_dir, self.fps = extract_frames(self.video_path, resize_size=None)
-        self.frames = [cv2.imread(os.path.join(save_dir, f)) for f in sorted(os.listdir(save_dir))]
-
+        self.frames = [
+            cv2.imread(os.path.join(save_dir, f))
+            for f in sorted(os.listdir(save_dir), key=numeric_sort)
+        ]
     def detect_table_bbox(self, image):
         
         results = self.table_yolo_model.predict(source=image)
@@ -215,7 +218,6 @@ class TableTracker:
             # BFMatcher to match features
             bf = cv2.BFMatcher(cv2.NORM_HAMMING, crossCheck=True)
             matches = bf.match(descriptors_ref, descriptors_curr)
-            # knn_matches = bf.knnMatch(descriptors_ref, descriptors_curr, k=2)
             # ratio = 0.7  # typical ratio test value
             if not matches:
                 return None
@@ -265,6 +267,7 @@ class TableTracker:
             
         # B. Forward propagation (ref_idx -> end)
         ref_corners = np.array(tracked_table_points[init_ref_idx], dtype=np.float32).reshape(-1, 1, 2)
+        ref_index = init_ref_idx
         for i in range(init_ref_idx + 1, len(self.frames)):
             new_corners = compute_homography_and_transform_corners(ref_index, i)
             if new_corners is None:
@@ -304,9 +307,7 @@ class TableTracker:
                             break
                     else:
                         print("Table not found.")
-                        exit()
-                        # return None
-                        
+                        return None
                             
             if output_video and tracked_points:
                 output_path = os.path.join(os.path.dirname(self.video_path), "output.avi")
