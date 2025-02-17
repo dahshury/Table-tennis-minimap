@@ -4,6 +4,7 @@ import random
 import pandas as pd
 import shutil
 import os
+import re
 import cv2
 import ffmpeg
 from PIL import Image
@@ -666,3 +667,7 @@ def show_mask(mask, ax, obj_id=None, random_color=False):
     h, w = mask.shape[-2:]
     mask_image = mask.reshape(h, w, 1) * color.reshape(1, 1, -1)
     ax.imshow(mask_image)
+    
+def numeric_sort(value):
+    numbers = re.findall(r'\d+', value)
+    return int(numbers[0]) if numbers else -1
