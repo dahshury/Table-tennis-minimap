@@ -13,27 +13,27 @@ Ping Pong Tracker is a comprehensive video analysis tool designed to analyze tab
 
 - **Ball Tracking:**  
 Detects and tracks the ball using a combination of RT-DETR for object detection and SAM-based segmentation and tracking. This robust pipeline ensures that even when the ball gains height (as during a serve), it's location is correctly determined relative to the global coordiantes.
-<div align="left" style="padding-left: 50px;">
-    <img src="./media/ball_track.gif" alt="Ball Tracking" width="300">
-</div>
+  <div align="left" style="padding-left: 50px;">
+      <img src="./media/ball_track.gif" alt="Ball Tracking" width="300">
+  </div>
 
 - **Human Tracking:**  
 Utilizes YOLO-based detection with ByteTrack to identify and track players throughout the video, allowing analysis of their positions relative to the table.
-<div align="left" style="padding-left: 50px;">
-    <img src="./media/human_track.gif" alt="Human Tracking" width="300">
-</div>
+  <div align="left" style="padding-left: 50px;">
+      <img src="./media/human_track.gif" alt="Human Tracking" width="300">
+  </div>
 
 - **Table Detection & Tracking:**  
 Implements table segmentation using YOLO and SAM, followed by robust corner tracking with feature-based RANSAC homography. This ensures reliable transformation from the video’s perspective to a bird’s-eye view of the table. Even when the table moves, chaining ORB descriptors allows for tracking across frames.
-<div align="left" style="padding-left: 50px;">
-    <img src="./media/table_track.gif" alt="Table Tracking" width="300">
-</div>
+  <div align="left" style="padding-left: 50px;">
+      <img src="./media/table_track.gif" alt="Table Tracking" width="300">
+  </div>
 
 - **Mini Table Generation:**  
 Generates a mini table view video that overlays the tracked ball and human positions on a corrected, perspective-transformed image of the table.
-<div align="left" style="padding-left: 50px;">
-    <img src="./media/mini_table.gif" alt="Table Generation" width="300">
-</div>
+  <div align="left" style="padding-left: 50px;">
+      <img src="./media/mini_table.gif" alt="Table Generation" width="300">
+  </div>
 
 ---
 
