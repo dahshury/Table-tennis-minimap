@@ -2,7 +2,7 @@
 /chkpts/*
 /datasets
 /dist
-/media/*.mp4
+# /media/*.mp4
 /media/*.avi
 /media/experiment
 /media/extracted
