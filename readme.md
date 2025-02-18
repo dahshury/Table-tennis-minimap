@@ -1,6 +1,8 @@
 # Table Tennis Tracker
-<video controls src="./media/point.mp4" title="Title" width="500"></video>
 
+<div align="left" style="padding-left: 50px;">
+    <img src="./media/fullpoint.gif" alt="Ball Tracking" width="500">
+</div>
 
 **Ping Pong Tracker is a comprehensive video analysis tool designed to analyze table tennis matches. It leverages state-of-the-art computer vision and deep learning techniques to track the ball, detect human players, and segment the table.**
 
