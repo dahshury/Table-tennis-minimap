@@ -82,7 +82,7 @@ For optimal performance and accurate tracking, ensure that your input videos mee
 ## Technologies Used
 
 + [Python](https://www.python.org/) – Primary programming language.
-+ [OpenCV](https://opencv.org/) – Image and video processing.
++ [OpenCV](https://opencv.org/) – Image and video processing, ORB descriptors for maintaining consistent table tracking.
 + [PyTorch](https://pytorch.org/) – Deep learning framework for model inference.
 + [YOLO (Ultralytics)](https://github.com/ultralytics/yolov5) – Real-time object detection.
 + [SAM2 (Segment Anything Model 2)](https://github.com/facebookresearch/sam2) – Advanced segmentation for accurate mask extraction and ball tracking.
