@@ -1,5 +1,5 @@
 # Table Tennis Tracker
-<div align="left" style="padding-left: 0px;">
+<div style="width: 400px; overflow: hidden;">
     <img src="./media/0.webp" alt="Table Tracking" width="400">
 </div>
 
@@ -124,8 +124,8 @@ For optimal performance and accurate tracking, ensure that your input videos mee
       ```
 
     - **Install SAM2.1:**
-    Follow the installation instructions at the [SAM2 repository](https://github.com/facebookresearch/sam2).
-      ```
+    Follow the installation instructions at the [SAM2 repository](https://github.com/facebookresearch/sam2). You should use a SAM checkpoint for video tracking suitable to your hardware requirements.
+      
 ---
 
 ## Usage
