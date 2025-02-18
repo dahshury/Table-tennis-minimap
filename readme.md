@@ -1,10 +1,10 @@
 # Table Tennis Tracker
 <div style="display: flex; justify-content: space-between;">
   <div style="width: 30%;">
-    <img src="./media/point.gif" alt="Table Tracking" width="50%">
+    <img src="./media/point.gif" alt="Table Tracking" width="30%">
   </div>
   <div style="width: 60%;">
-    <img src="./media/mini_table.gif" alt="Table Generation" width="50%">
+    <img src="./media/mini_table.gif" alt="Table Generation" width="30%">
   </div>
 </div>
 
